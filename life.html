@@ -3,38 +3,50 @@
   <head>
     <style>
       #life {
-	  widht: 100vw;
+	  xwidth: 100vw;
       }
     </style>
   <body>
 
-    <canvas id="life" widht="500" height="500">
+    <canvas id="life" width="500" height="500">
     </canvas>
 
     <script>
-      m = document.getElementById("life").getContext("2d")
+
+      'use strict'
+      
+      let m = document.getElementById("life").getContext("2d")
+
       m.canvas.width  = window.innerWidth*0.98;
       m.canvas.height = window.innerHeight*0.98;
       
-      draw = (x,y,c,s) => {
+      function draw (x,y,c,w,h) {
+
+	  /* m.beginPath()
+	     m.arc(x, y, 80, 0, 2 * Math.PI, false)
+	     m.lineWidth = 1;
+	     m.strokeStyle = c
+	     m.stroke() */
+	  
           m.fillStyle=c
-          m.fillRect(x,y,s,s)
+          m.fillRect(x,y,w,h)
       }
       
-      particles=[]
-      particle = (x,y,c) => {
-          return { "x":x, "y":y, "vx":0, "vy":0, "color":c }
+      let particles = []
+      function particle (x,y,c) {
+          return { "x":x, "y":y, "vx":0, "vy":0, "color":c, "fx":0, "fy":0 }
       }
       
-      randomx=()=>{
+      function randomx() {
           return Math.random()*(m.canvas.width-100)+50;
       }
-      randomy=()=>{
+
+      function randomy() {
           return Math.random()*(m.canvas.height-100)+50;
       }
       
-      create = (number, color) => {
-          group = []
+      function create(number, color) {
+          let group = []
           for (let i=0; i< number; i++) {
               group.push(particle(randomx(), randomy(), color))
               particles.push(group[i])
@@ -42,54 +54,95 @@
           return group
       }
 
-      rule = (particles1, particles2, g) => {
+      function rule(particles1, particles2, g) {
 	  for (let i=0; i < particles1.length; i++) {
-	      fx = 0
-	      fy = 0
-	      
+	      let a = particles1[i]
 	      for (let j=0; j < particles2.length; j++) {
-		  a = particles1[i]
-		  b = particles2[j]
-		  dx = a.x-b.x
-		  dy = a.y-b.y
-		  d = Math.sqrt(dx*dx+dy*dy)
+		  let b = particles2[j]
+		  let dx = a.x-b.x
+		  let dy = a.y-b.y
+		  let d = Math.sqrt(dx*dx+dy*dy)
 		  if (d > 0 && d < 80) {
-		      F = g * 1/d
-		      fx += F * dx
-		      fy += F * dy
+		      let F = g * 1/d
+		      a.fx += F * dx
+		      a.fy += F * dy
 		  }
 	      }
-	      a.vx = (a.vx + fx)*0.5
-	      a.vy = (a.vy + fy)*0.5
-	      a.x += a.vx
-	      a.y += a.vy
-	      if (a.x <= 0 || a.x >= m.canvas.widht) {a.vx *= -1}
-	      if (a.y <= 0 || a.y >= m.canvas.height) {a.vy *= -1}
-	  }
-      }  
-      
-      yellow = create(200, "yellow")
-      red = create(200, "red")
-      green = create(200, "green")
-      blue = create(200, "blue")
+	      /* a.vx = (a.vx + a.fx)*0.5
+		 a.vy = (a.vy + a.fy)*0.5
+		 if (a.x + a.vx < 0 || a.x + a.vx >= m.canvas.width) {
+		 a.vx *= -1
+		 }
+		 else {
+		 a.x += a.vx
+		 }
+		 if (a.y + a.vy < 0 || a.y + a.vy >= m.canvas.height) {
+		 a.vy *= -1
+		 }
+		 else {
+		 a.y += a.vy
+		 }
 
-      update = () => {
+		 a.fx = 0
+		 a.fy = 0 */
+	      
+	  }
+      }
+
+      function apply(particles) {
+	  for (let i=0; i < particles.length; i++) {
+	      let a = particles[i]
+	      a.vx = (a.vx*0.99 + a.fx) //*0.5
+	      a.vy = (a.vy*0.99 + a.fy) //*0.5
+	      if (a.x + a.vx < 0 || a.x + a.vx >= m.canvas.width) {
+		  a.vx *= -1
+	      }
+	      else {
+		  a.x += a.vx
+	      }
+	      if (a.y + a.vy < 0 || a.y + a.vy >= m.canvas.height) {
+		  a.vy *= -1
+	      }
+	      else {
+		  a.y += a.vy
+	      }
+
+	      a.fx = 0
+	      a.fy = 0
+	  }
+      }
+	  
+      let yellow = create(200, "yellow")
+      let red    = create(200, "red")
+      let green  = create(200, "green")
+      let blue   = create(200, "blue")
+      
+      function update() {
+	  
 	  /* rule(red, red, 0.1)
 	     rule(yellow, red, 0.15)
 	     rule(green, green, -0.37)
 	     rule(green, red, -0.2)
 	     rule(red, green, -0.1)
 	     rule(blue, green, 0.1)
-	     rule(blue, blue, 0.15) */
-	  rule(green, green, -0.32)
-	  rule(green,red, -0.17)
-	  rule(green, yellow, 0.34)
-	  rule(red, red, -0.10)
-	  rule(red, green, -0.34)
+	     rule(blue, blue, 0.15)
+	   */
+
+	  
 	  rule(yellow, yellow, 0.15)
-	  rule(yellow, green, -0.20)
+	  // rule(yellow, red, 0) 
+	  rule(yellow, green, 0.14)
+	  rule(yellow, blue, -0.05)
+
+	  rule(red, red, 0.10)
+	  rule(red, green, -0.51)
+	  // rule(red, blue, 0)
+
+	  rule(green, green, -0.32)
+	  rule(green, blue, -0.10)
+
 	  rule(blue, blue, 0.05)
-	  rule(blue, green, -0.10)
+	  
 	  /* 
 	   * 	  rule(blue, blue, 0.7)
 	   * 	  rule(blue, red, 0.2)
@@ -102,13 +155,17 @@
 	   * 	  rule(yellow, green, -0.20)
 	   * 	  rule(yellow, red, 0.15)
 	   * 	  rule(yellow, yellow, 0.15) */
-	  
+
+	  apply(particles)
+
           m.clearRect(0,0,m.canvas.width,m.canvas.height)
-          draw(0,0,"black",m.canvas.width)
+          draw(0,0,"black",m.canvas.width,m.canvas.height)
           for(let i=0; i < particles.length; i++) {
-              draw(particles[i].x, particles[i].y,
-		   particles[i].color, 5)
+	      draw(particles[i].x, particles[i].y,
+		   particles[i].color, 5, 5)
+		  
           }
+	  
           requestAnimationFrame(update)
       }
       
