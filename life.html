@@ -2,7 +2,19 @@
 <html>
   <head>
     <style>
+      :root {
+	  color-scheme: dark;
+      }
+
+      body {
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+      }
+
       #life {
+	  border-width: 2px;
+	  border-style: dashed;
 	  xwidth: 100vw;
       }
     </style>
@@ -15,10 +27,15 @@
 
       'use strict'
       
-      let m = document.getElementById("life").getContext("2d")
+      const canvas = document.getElementById("life")
+      const m = canvas.getContext("2d")
 
-      m.canvas.width  = window.innerWidth*0.98;
-      m.canvas.height = window.innerHeight*0.98;
+      function updateCanvasDimensions() {
+	  canvas.width  = window.innerWidth*0.95;
+	  canvas.height = window.innerHeight*0.95;
+      }
+
+      updateCanvasDimensions();
       
       function draw (x,y,c,w,h) {
 
@@ -115,7 +132,7 @@
       let yellow = create(200, "yellow")
       let red    = create(200, "red")
       let green  = create(200, "green")
-      let blue   = create(200, "blue")
+      let blue   = create(100, "blue")
       
       function update() {
 	  
@@ -129,19 +146,19 @@
 	   */
 
 	  
-	  rule(yellow, yellow, 0.15)
-	  // rule(yellow, red, 0) 
-	  rule(yellow, green, 0.14)
-	  rule(yellow, blue, -0.05)
+	  rule(yellow, yellow, 0.215)
+	  rule(yellow, red, -0.105) 
+	  rule(yellow, green, 10.14)
+	  rule(yellow, blue, -0.105)
 
 	  rule(red, red, 0.10)
-	  rule(red, green, -0.51)
-	  // rule(red, blue, 0)
+	  rule(red, green, -0.151)
+	  // rule(red, blue, 0.075)
 
 	  rule(green, green, -0.32)
 	  rule(green, blue, -0.10)
 
-	  rule(blue, blue, 0.05)
+	  rule(blue, blue, 1.07)
 	  
 	  /* 
 	   * 	  rule(blue, blue, 0.7)
